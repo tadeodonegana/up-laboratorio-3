@@ -1,0 +1,15 @@
+1. Compilo el programa:
+make
+
+2. Una vez compilado, ejecuto los programas en terminales distintas:
+./cajero 1
+./cajero 2  
+./cajero 3
+./tesorero
+
+3. Los cajeros generan automáticamente depósitos aleatorios con:
+   - Importes entre $100 y $500
+   - Tipo: 0 (cheque) o 1 (efectivo)
+
+4. El tesorero procesa los lotes de depósitos y muestra el resumen acumulativo 
+   por cajero (TC-EFEC, TC-CHEQ) y totales del sistema (TS-EFEC, TS-CHEQ).
