@@ -15,6 +15,8 @@
 #define MAX_VUELOS 100
 #define MAX_PASAJERO 100
 
+#define LOTE_SIZE 10
+
 typedef struct {
     int numero;
     char destino[MAX_DESTINO];
