@@ -41,3 +41,17 @@ int escribirArchivo(char* texto) {
     fprintf(fpWrite, "%s\n", texto);
     return 1;
 }
+
+int renombrarArchivo(const char* nombreOriginal, int secuencia) {
+    char nuevoNombre[256];
+    /*Pensado para el caso de los lotes de viajes*/
+    snprintf(nuevoNombre, sizeof(nuevoNombre), "lote.%03d.dat", secuencia);
+    
+    if (rename(nombreOriginal, nuevoNombre) == 0) {
+        printf("Archivo renombrado con éxito: %s\n", nuevoNombre);
+        return 1;
+    } else {
+        perror("Error al renombrar el archivo");
+        return 0;
+    }
+}
