@@ -1,0 +1,10 @@
+1. Compilo el programa:
+make
+
+2. Una vez compilado, ejecuto los programas en terminales distintas con:
+./carga
+./reserva
+
+3. Cargo vuelos usando numero de vuelo, destino y nombre del pasajero. Al ingresar 0, se finaliza la carga.
+
+4. El programa reserva.c procesa los vuelos cargados y muestra el resumen de reservas acumulativo.
