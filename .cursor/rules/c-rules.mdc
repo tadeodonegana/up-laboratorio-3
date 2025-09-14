@@ -1,0 +1,210 @@
+---
+description: Reglas específicas para programación en C - Laboratorio 3
+globs:
+alwaysApply: true
+---
+
+# Reglas de Programación en C - Laboratorio 3
+
+## 1. Estructura del Programa Principal
+
+### ✅ CORRECTO:
+```c
+int main(int argc, char *argv[]) {
+    /* Declaraciones al inicio */
+    int variable1;
+    char buffer[100];
+    
+    /* Código ejecutable después */
+    variable1 = 10;
+    return 0;
+}
+```
+
+### ❌ INCORRECTO:
+```c
+int main() {  /* Falta argc y argv */
+    /* ... */
+}
+```
+
+**REGLA:** TODO programa debe tener un `main(int argc, char *argv[])` y todo proceso igual.
+
+## 2. Declaración de Variables
+
+### ✅ CORRECTO:
+```c
+void miFuncion(void) {
+    /* TODAS las variables al inicio */
+    int variable1;
+    char buffer[100];
+    FILE *archivo;
+    
+    /* Código ejecutable va después */
+    variable1 = 10;
+    strcpy(buffer, "texto");
+}
+```
+
+### ❌ INCORRECTO:
+```c
+void miFuncion(void) {
+    int variable1 = 10;
+    
+    printf("Algo de código\n");  /* Statement ejecutable */
+    
+    char buffer[100];  /* ¡ERROR! Declaración después de código */
+}
+```
+
+**REGLA:** Las variables JAMÁS deben ser declaradas dentro del cuerpo de una función, en todo caso declararse al inicio del programa.
+
+## 3. Comentarios
+
+### ✅ CORRECTO:
+```c
+/* Este es un comentario válido */
+/* 
+ * Comentario multilínea
+ * válido en Mac
+ */
+```
+
+### ❌ INCORRECTO:
+```c
+// Este tipo de comentario NO se usa en Mac
+```
+
+**REGLA:** En Mac no comentar con `//` SOLO CON `/* */`
+
+## 4. Tipos de Datos Prohibidos
+
+### ❌ PROHIBIDO:
+```c
+float numero = 3.14;   /* NO usar */
+double valor = 2.718;  /* NO usar */
+```
+
+### ✅ USAR EN SU LUGAR:
+```c
+int numero = 314;      /* Usar enteros */
+```
+
+**REGLA:** NO deben usarse en esta materia tipos `float` ni `double`. JAMÁS en esta materia vamos a usar FLOAT o DOUBLE.
+
+## 5. Limpieza de Variables
+
+### ✅ CORRECTO:
+```c
+char buffer[100];
+memset(buffer, 0x00, sizeof(buffer));
+```
+
+**REGLA:** Usar `memset` para limpiar variables.
+
+## 6. Includes
+
+### ✅ CORRECTO:
+```c
+#include "funciones.h"
+#include "definiciones.h"
+```
+
+### ❌ INCORRECTO:
+```c
+#include <funciones.h>     /* NO usar <> para archivos propios */
+#include "archivo.c"       /* JAMÁS incluir .c */
+```
+
+**REGLAS:** 
+- Las librerías propias se incluyen entre comillas `""` y no con los signos `<>`.
+- JAMÁS se hace un `#include` de un `.c`
+- JAMÁS se hace un `#include` dentro de un `.h`, sólo cuando sea necesaria en la materia.
+- No poner un `.c` en un `#include` o un `#include` de un `.c`
+
+## 7. Declaraciones en Headers
+
+### ✅ CORRECTO en .h:
+```c
+/* funciones.h */
+int miFuncion(int parametro);
+extern int variableGlobal;  /* Solo declaración */
+```
+
+### ✅ CORRECTO en .c:
+```c
+/* funciones.c */
+int variableGlobal = 0;  /* Definición real */
+```
+
+### ❌ INCORRECTO en .h:
+```c
+int variableGlobal = 0;  /* NO definir variables en .h */
+```
+
+**REGLA:** JAMÁS se debe declarar una variable en un `.h` solamente en los `.c`
+
+## 8. Makefile
+
+### ✅ CORRECTO:
+```makefile
+programa1: archivo1.o
+	gcc -o programa1 archivo1.o
+	chmod 755 programa1
+
+programa2: archivo2.o  
+	gcc -o programa2 archivo2.o
+	chmod 755 programa2
+```
+
+**REGLAS:**
+- SIEMPRE USAR TAB en el Makefile luego de una declaración.
+- 2 procesos en el makefile, 2 ejecutables que se usan las veces necesarias.
+- JAMÁS repetir los mismos ejecutables. Si se necesitan 3 veces un proceso va a haber un objeto, un ejecutable y se usarán 3 terminales.
+
+## 9. Semáforos
+
+### ✅ CORRECTO:
+```c
+/* Solamente usaremos un semáforo */
+/* Los semáforos serán de -1 a 0 a 1 */
+```
+
+**REGLA:** Solamente usaremos un semáforo en la materia. Los semáforos serán de -1 a 0 a 1.
+
+## 10. Archivos
+
+**REGLA:** Solo trabajaremos con archivos secuenciales de texto.
+
+## 11. Funciones del Sistema
+
+**REGLA:** Uso de `usleep()` cuando sea necesario.
+
+## 12. Números Aleatorios
+
+### ✅ CORRECTO:
+```c
+int main(int argc, char *argv[]) {
+    srand(time(NULL));  /* srand() va en el main */
+    /* resto del código */
+    return 0;
+}
+```
+
+### ❌ INCORRECTO:
+```c
+/* En una librería */
+void inicializarRandom(void) {
+    srand(time(NULL));  /* NO encapsular srand() */
+}
+```
+
+**REGLA:** Para números aleatorios, `srand()` debe ir en el main, no encapsular en una función en una librería.
+
+## 13. Arquitectura del Proyecto
+
+**REGLAS:**
+- Modularizado y Framework por encima de todo
+- Genérico
+- Sumar un `README.txt` (hay un ejemplo en el drive)
+
