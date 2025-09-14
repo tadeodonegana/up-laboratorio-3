@@ -44,6 +44,7 @@ int escribirArchivo(char* texto) {
 
 int renombrarArchivo(const char* nombreOriginal, int secuencia) {
     char nuevoNombre[256];
+    memset(nuevoNombre, 0x00, sizeof(nuevoNombre));
     /*Pensado para el caso de los lotes de viajes*/
     snprintf(nuevoNombre, sizeof(nuevoNombre), "lote.%03d.dat", secuencia);
     
