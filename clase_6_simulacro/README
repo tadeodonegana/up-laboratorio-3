@@ -1,0 +1,10 @@
+1. Compilar:
+   make
+
+2. Ejecutar en orden para la correcta inicializacion del semaforo:
+   ./menu
+   ./cajero 1
+   ./cajero 2
+   ./cajero 3
+
+3. Comience a cargar sus productos en menu, y vea que cajero procesa sus compras.
