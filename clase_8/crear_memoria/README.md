@@ -1,0 +1,1 @@
+La idea de este ejercicio es crear un proceso que escriba en la memoria compartida y otro proceso que lea desde la memoria compartida, usando semaforos para sincronizar el acceso a la memoria compartida.
