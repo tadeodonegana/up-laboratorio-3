@@ -2,6 +2,6 @@
 #define CLAVE_H
 #include <sys/ipc.h>
 
-key_t creo_clave(void);
+key_t creoClave(int clave_base);
 
 #endif

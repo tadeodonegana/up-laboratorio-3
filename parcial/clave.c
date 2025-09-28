@@ -3,7 +3,7 @@
 #include "stdio.h"
 #include "stdlib.h"
 
-key_t creo_clave(void) {
+key_t creoClave(void) {
     key_t clave;
     clave = ftok("/bin/ls", 33);
     if (clave == (key_t)-1) {

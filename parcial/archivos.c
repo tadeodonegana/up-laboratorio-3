@@ -1,6 +1,7 @@
 #include "stdio.h"
 #include "stdlib.h"
 #include "string.h"
+#include "archivos.h"
 
 FILE *fpRead = NULL;
 FILE *fpWrite = NULL;
@@ -64,4 +65,40 @@ int borrarArchivo(const char* nombreArchivo) {
         perror("Error al borrar el archivo");
         return 0;
     }
+}
+
+int contarLineas(const char *archivo) {
+    int count;
+    char linea[100];
+
+    count = 0;
+    memset(linea, 0x00, sizeof(linea));
+    if (abrirArchivo(&fpRead, archivo, "r")) {
+        while (leerArchivo(linea, 100)) {
+            count++;
+            memset(linea, 0x00, 100);
+        }
+        cerrarArchivo(&fpRead);
+    }
+    return count;
+}
+
+int leerLineaN(const char *archivo, int n, char *out, int outLen) {
+    int i;
+    char linea[100];
+
+    i = 0;
+    memset(linea, 0x00, sizeof(linea));
+    if (abrirArchivo(&fpRead, archivo, "r")) {
+        while (leerArchivo(linea, 100)) {
+            i++;
+            if (i == n) {
+                strncpy(out, linea, outLen - 1);
+                return 1;
+            }
+            memset(linea, 0x00, 100);
+        }
+        cerrarArchivo(&fpRead);
+    }
+    return 0;
 }

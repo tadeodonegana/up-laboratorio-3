@@ -11,5 +11,7 @@ int leerArchivo(char* buffer, int maxLen);
 int escribirArchivo(char* texto);
 int renombrarArchivo(const char* nombreOriginal, int secuencia);
 int borrarArchivo(const char* nombreArchivo);
+int contarLineas(const char* archivo);
+int leerLineaN(const char* archivo, int n, char* out, int outLen);
 
 #endif

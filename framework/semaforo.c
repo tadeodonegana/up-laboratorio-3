@@ -6,8 +6,8 @@
 #include "stdlib.h"
 
 
-int creo_semaforo(void) {
-    key_t clave = creo_clave();
+int creoSemaforo(int clave_base) {
+    key_t clave = creoClave(clave_base);
     int id_semaforo = semget(clave, 1, 0600|IPC_CREAT);
     if(id_semaforo == -1) {
         printf("Error: no puedo crear semáforo\n");
@@ -16,11 +16,11 @@ int creo_semaforo(void) {
     return id_semaforo;
 }
 
-void inicia_semaforo(int id_semaforo, int valor) {
+void iniciaSemaforo(int id_semaforo, int valor) {
     semctl(id_semaforo, 0, SETVAL, valor);
 }
 
-void levanta_semaforo(int id_semaforo) {
+void levantaSemaforo(int id_semaforo) {
     struct sembuf operacion;
     printf("Levanta semáforo \n");
     operacion.sem_num = 0;
@@ -29,7 +29,7 @@ void levanta_semaforo(int id_semaforo) {
     semop(id_semaforo, &operacion, 1);
 }
 
-void espera_semaforo(int id_semaforo) {
+void esperaSemaforo(int id_semaforo) {
     struct sembuf operacion;
     printf("Espera semáforo... \n");
     operacion.sem_num = 0;

@@ -6,32 +6,32 @@
 #include "stdlib.h"
 
 
-int creo_semaforo(void) {
-    key_t clave = creo_clave();
-    int id_semaforo = semget(clave, 1, 0600|IPC_CREAT);
-    if(id_semaforo == -1) {
+int creoSemaforo(void) {
+    key_t clave = creoClave();
+    int idSemaforo = semget(clave, 1, 0600|IPC_CREAT);
+    if(idSemaforo == -1) {
         printf("Error: no puedo crear semáforo\n");
         exit(0);
     }
-    return id_semaforo;
+    return idSemaforo;
 }
 
-void inicia_semaforo(int id_semaforo, int valor) {
-    semctl(id_semaforo, 0, SETVAL, valor);
+void iniciaSemaforo(int idSemaforo, int valor) {
+    semctl(idSemaforo, 0, SETVAL, valor);
 }
 
-void levanta_semaforo(int id_semaforo) {
+void levantaSemaforo(int idSemaforo) {
     struct sembuf operacion;
     operacion.sem_num = 0;
     operacion.sem_op = 1;
     operacion.sem_flg = 0;
-    semop(id_semaforo, &operacion, 1);
+    semop(idSemaforo, &operacion, 1);
 }
 
-void espera_semaforo(int id_semaforo) {
+void esperaSemaforo(int idSemaforo) {
     struct sembuf operacion;
     operacion.sem_num = 0;
     operacion.sem_op = -1;
     operacion.sem_flg = 0;
-    semop(id_semaforo, &operacion, 1);
+    semop(idSemaforo, &operacion, 1);
 }

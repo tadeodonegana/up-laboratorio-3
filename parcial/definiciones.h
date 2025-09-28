@@ -11,24 +11,9 @@
 #define TRUE    1
 #define FALSE   0
 
-#define CAJERO_1 "cajero1.dat"
-#define CAJERO_2 "cajero2.dat"
-#define CAJERO_3 "cajero3.dat"
-#define PRECIO_LIMITE 20000
-#define MAX_PRODUCTOS 50
-
-#define ESPERA_CAJA 100
-
-#define MIN_UNIDADES_CAJA1 1
-#define MAX_UNIDADES_CAJA1 5
-#define MIN_UNIDADES_CAJA2 6
-#define MAX_UNIDADES_CAJA2 10
-#define MIN_UNIDADES_CAJA3 11
-
-typedef struct 
-{
-    int precio;
-    char descripcion[LARGO];
-} Producto;
+#define EQUIPO_1_FILE "equipo1.dat"
+#define EQUIPO_2_FILE "equipo2.dat"
+#define SCORE_FILE    "score.dat"
+#define ESPERA_TURNO  500
 
 #endif

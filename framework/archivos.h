@@ -10,5 +10,6 @@ int cerrarArchivo(FILE **fp);
 int leerArchivo(char* buffer, int maxLen);
 int escribirArchivo(char* texto);
 int renombrarArchivo(const char* nombreOriginal, int secuencia);
+int borrarArchivo(const char* nombreArchivo);
 
 #endif

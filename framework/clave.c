@@ -2,10 +2,11 @@
 #include "clave.h"
 #include "stdio.h"
 #include "stdlib.h"
+#include "definiciones.h"
 
-key_t creo_clave(void) {
+key_t creoClave(int clave_base) {
     key_t clave;
-    clave = ftok("/bin/ls", 33);
+    clave = ftok("/bin/ls", clave_base);
     if (clave == (key_t)-1) {
         printf("No puedo conseguir clave semáforo\n");
         exit(0);

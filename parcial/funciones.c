@@ -5,6 +5,8 @@
 #include "archivos.h"
 #include "definiciones.h"
 #include "global.h"
+#include "semaforo.h"
+#include <unistd.h>
 
 void producirLote(void){
     int i = 0;
@@ -115,103 +117,176 @@ int* generarNumerosUnicos(int desde, int hasta, int* cantidad) {
     return numerosGenerados;
 }
 
-void mostrarMenu(void){
-    printf("1. Agregar producto\n");
-    printf("2. Finalizar compra\n");
-    printf("3. Salir\n");
-    printf("Ingrese una opción: ");
-}
 
-/* Agrega un producto a productos */
-void agregarProducto(void){
-    /* Limite de productos */
-    if (num_productos >= MAX_PRODUCTOS){
-        printf("No se pueden agregar mas productos\n");
-        return;
-    }
-
-    /* Cargo descripcion del producto */
-    memset(productos[num_productos].descripcion, 0x00, LARGO);
-    printf("Ingrese la descripción del producto: ");
-    scanf("%s", productos[num_productos].descripcion);
-    
-    /* Cargo precio del producto */
-    printf("Ingrese el precio del producto: ");
-    scanf("%d", &productos[num_productos].precio);
-
-    num_productos++;
-    printf("Producto agregado correctamente\n");
-}
-
-/* Finaliza la compra sumando los precios de los productos y
-derivando al cajero correspondiente */
-void finalizarCompra(void){
-    int i, caja;
-    int total = 0;
-    char nombreArchivo[LARGO];
-    char cadena[LARGO];
-
-    memset(nombreArchivo, 0x00, LARGO);
-    memset(cadena, 0x00, LARGO);
-
-    /* Suma de todos los productos */
-    for (i = 0; i < num_productos; i++) {
-        total += productos[i].precio;  
-    }
-
-    /* Derivo al archivo (cajero) correspondiente */
-    if (num_productos >= MIN_UNIDADES_CAJA1 && num_productos <= MAX_UNIDADES_CAJA1) {
-        caja = 1;
-        strncpy(nombreArchivo, CAJERO_1, LARGO - 1);
-    } else if (num_productos >= MIN_UNIDADES_CAJA2 && num_productos <= MAX_UNIDADES_CAJA2) {
-        caja = 2;
-        strncpy(nombreArchivo, CAJERO_2, LARGO - 1);
-    } else if (num_productos >= MIN_UNIDADES_CAJA3) {
-        caja = 3;
-        strncpy(nombreArchivo, CAJERO_3, LARGO - 1);
-    } else {
-        printf("Error: Cantidad de productos invalida (%d unidades)\n", num_productos);
-        return;
-    }
-
-    if (!abrirArchivo(&fpWrite, nombreArchivo, "a")) {
-        printf("Error al abrir el archivo de compra.\n");
-    } else {
-        snprintf(cadena, LARGO, "%d", total);
-        escribirArchivo(cadena);
-        cerrarArchivo(&fpWrite);
-        printf("Compra finalizada en la caja %d con un total de %d unidades\n", caja, num_productos);
-
-        printf("Detalle de la compra:\n");
-        for (i = 0; i < num_productos; i++) {
-            printf("%s: %d\n", productos[i].descripcion, productos[i].precio);
-        }
-        /* Vuelvo a num_productos = 0 por que ya termino la compra */
-        num_productos = 0;
-    }
-}
-
-/* Leer los productos desde un archivo asociado a un cajero */
-void consumirProductosCajero(int numeroCajero){
+int obtenerUltimoScore(int *s1, int *s2) {
     char linea[LARGO];
-    char nombreArchivo[LARGO];
-    int total = 0;
-    memset(nombreArchivo, 0x00, LARGO);
-    memset(linea, 0x00, LARGO);
-    snprintf(nombreArchivo, LARGO, "cajero%d.dat", numeroCajero);
+    int a = 0;
+    int b = 0;
 
-    if (!abrirArchivo(&fpRead, nombreArchivo, "r")) {
-        return;
+    memset(linea, 0x00, sizeof(linea));
+    if (abrirArchivo(&fpRead, SCORE_FILE, "r")) {
+        if (leerArchivo(linea, LARGO)) {
+            if (sscanf(linea, "%d %d", &a, &b) == 2) {
+                *s1 = a;
+                *s2 = b;
+                cerrarArchivo(&fpRead);
+                return 1;
+            }
+        }
+        cerrarArchivo(&fpRead);
+    }
+    return 0;
+}
+
+int escribirScore(int s1, int s2) {
+    char linea[LARGO];
+
+    memset(linea, 0x00, sizeof(linea));
+    snprintf(linea, LARGO, "%d %d", s1, s2);
+    if (!abrirArchivo(&fpWrite, SCORE_FILE, "w")) {
+        return 0;
+    }
+    escribirArchivo(linea);
+    cerrarArchivo(&fpWrite);
+    return 1;
+}
+
+int appendLogEquipo(int equipo, char *linea) {
+    char *archivo;
+    if(equipo == 1) {
+        archivo = EQUIPO_1_FILE;
+    } else {
+        archivo = EQUIPO_2_FILE;
+    }
+    if (!abrirArchivo(&fpWrite, archivo, "a")) {
+        return 0;
+    }
+    escribirArchivo(linea);
+    cerrarArchivo(&fpWrite);
+    return 1;
+}
+
+void inicializarArchivosPartido(void) {
+    char linea[LARGO];
+
+    borrarArchivo(EQUIPO_1_FILE);
+    borrarArchivo(EQUIPO_2_FILE);
+    borrarArchivo(SCORE_FILE);
+
+    memset(linea, 0x00, sizeof(linea));
+    if (abrirArchivo(&fpWrite, SCORE_FILE, "w")) {
+        snprintf(linea, LARGO, "%d %d", 0, 0);
+        escribirArchivo(linea);
+        cerrarArchivo(&fpWrite);
+    }
+}
+
+int procesoEquipo(int numeroEquipo, int maxGoles) {
+    int score1;
+    int score2;
+    int numeroIngresado;
+    int numeroAleatorio;
+    int gol;
+    char buffer[LARGO];
+
+    memset(buffer, 0x00, sizeof(buffer));
+
+    if (!obtenerUltimoScore(&score1, &score2)) {
+        score1 = 0;
+        score2 = 0;
+    }
+    /* Si se llego al objetivo finalizo*/
+    if (score1 >= maxGoles || score2 >= maxGoles) {
+        return 1;
     }
 
-    /* Se muestra el total y se borra el archivo */
-    while (leerArchivo(linea, LARGO)) {
-        total += atoi(linea);
-        memset(linea, 0x00, LARGO);
+    printf("Equipo %d - Remate: ingrese un número (1-3): ", numeroEquipo);
+    scanf("%d", &numeroIngresado);
+    if (numeroIngresado < 1 || numeroIngresado > 3) {
+        printf("Entrada inválida. Debe ser 1, 2 o 3.\n");
+        return 0;
     }
-    cerrarArchivo(&fpRead);
-    borrarArchivo(nombreArchivo);
-    if (total != 0) {
-        printf("Se ha cobrado un total de: $%d\n", total);
+
+    numeroAleatorio = inDevolverNumeroAleatorio(1, 3);
+    
+    if(numeroIngresado == numeroAleatorio) {
+        gol = 1;
+    } else {
+        gol = 0;
     }
+
+    printf("Equipo %d -> Remate: %d vs %d => %s\n", numeroEquipo, numeroIngresado, numeroAleatorio, (gol ? "GOL" : "FUERA"));
+
+    if (!obtenerUltimoScore(&score1, &score2)) {
+        score1 = 0;
+        score2 = 0;
+    }
+
+    snprintf(buffer, LARGO, "Remate: %d vs %d => %s", numeroIngresado, numeroAleatorio, (gol ? "GOL" : "FUERA"));
+    /* Escribo el log de lo que paso en el archivo del equipo*/
+    appendLogEquipo(numeroEquipo, buffer);
+
+    if (gol) {
+        if (numeroEquipo == 1) {
+            score1++;
+        } else {
+            score2++;
+        }
+    }
+    /* Escribio score sobreescribioendo*/
+    escribirScore(score1, score2);
+
+    return 0;
+}
+
+int procesoPanel(int maxGoles) {
+    int inicializado = 0;
+    int lastC1 = 0;
+    int lastC2 = 0;
+    int c1;
+    int c2;
+    int s1;
+    int s2;
+    char linea[LARGO];
+    int hayEvento;
+
+    if (!inicializado) {
+        memset(linea, 0x00, sizeof(linea));
+        inicializarArchivosPartido();
+        printf("Panel iniciado. Meta: %d\n", maxGoles);
+        inicializado = 1;
+    }
+
+    c1 = contarLineas(EQUIPO_1_FILE);
+    c2 = contarLineas(EQUIPO_2_FILE);
+    hayEvento = 0;
+
+    if (c1 > lastC1) {
+        memset(linea, 0x00, sizeof(linea));
+        if (leerLineaN(EQUIPO_1_FILE, c1, linea, LARGO)) {
+            printf("Equipo 1 -> %s\n", linea);
+        }
+        lastC1 = c1;
+        hayEvento = 1;
+    }
+    if (c2 > lastC2) {
+        memset(linea, 0x00, sizeof(linea));
+        if (leerLineaN(EQUIPO_2_FILE, c2, linea, LARGO)) {
+            printf("Equipo 2 -> %s\n", linea);
+        }
+        lastC2 = c2;
+        hayEvento = 1;
+    }
+
+    if (obtenerUltimoScore(&s1, &s2)) {
+        if (hayEvento) {
+            printf("Marcador: %d - %d\n", s1, s2);
+        }
+        if (s1 >= maxGoles || s2 >= maxGoles) {
+            printf("Partido terminado. Ganador: Equipo %d. Resultado final %d-%d\n", (s1 > s2) ? 1 : 2, s1, s2);
+            return 1;
+        }
+    }
+
+    return 0;
 }

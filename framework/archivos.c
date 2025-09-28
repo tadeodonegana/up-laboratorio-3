@@ -56,3 +56,13 @@ int renombrarArchivo(const char* nombreOriginal, int secuencia) {
         return 0;
     }
 }
+
+int borrarArchivo(const char* nombreArchivo) {
+    if (remove(nombreArchivo) == 0) {
+        printf("Archivo %s borrado con éxito.\n", nombreArchivo);
+        return 1;
+    } else {
+        perror("Error al borrar el archivo");
+        return 0;
+    }
+}
