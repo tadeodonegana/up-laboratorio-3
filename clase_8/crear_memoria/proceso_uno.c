@@ -17,8 +17,8 @@ int main(int argc,char *argv[])
     int id_memoria;
     dato *memoria = NULL;
     int i, aleatorio;
-    iniciaSemaforo(id_semaforo, VERDE);
     id_semaforo = creoSemaforo(CLAVE_BASE);
+    iniciaSemaforo(id_semaforo, VERDE);
     memoria = (dato*)creoMemoria(sizeof(dato)*CANTIDAD, &id_memoria, CLAVE_BASE);
     srand(time(NULL));
     while(1)
