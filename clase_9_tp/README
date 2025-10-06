@@ -1,0 +1,10 @@
+1. Compilo los procesos:
+make
+
+2. Ejecuto el banco:
+./banco
+
+3. Ejecuto uno o más cajeros automáticos (en otras terminales):
+./cajero 1
+./cajero 2
+./cajero 3

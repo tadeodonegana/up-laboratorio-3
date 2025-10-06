@@ -1,0 +1,7 @@
+#ifndef _ESPERA_H
+#define _ESPERA_H
+
+void esperarProcesoInit(void);
+void crearFlag(void);
+
+#endif
