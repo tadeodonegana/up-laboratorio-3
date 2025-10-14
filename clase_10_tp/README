@@ -1,0 +1,8 @@
+1. Compilo el programa:
+make
+
+2. Una vez compilado, ejecuto el programa con:
+./programa [num_jugadores]
+
+
+3. Comienza el juego
