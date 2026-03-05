@@ -32,15 +32,7 @@ int main(int argc, char *argv[]) {
         return 1;
     }
     printf("Equipo %d iniciado. Objetivo: %d\n", numeroEquipo, maxGoles);
-    while (1){
-        esperaSemaforo(idSemaforo);
-        if (procesoEquipo(numeroEquipo, maxGoles)) {
-            levantaSemaforo(idSemaforo);
-            break;
-        }
-        levantaSemaforo(idSemaforo);
-        usleep(ESPERA_TURNO*1000);
-    }
+    procesoEquipo(numeroEquipo, maxGoles);
     return 0;
 }
 

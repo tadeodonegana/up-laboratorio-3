@@ -188,61 +188,72 @@ int procesoEquipo(int numeroEquipo, int maxGoles) {
     int numeroAleatorio;
     int gol;
     char buffer[LARGO];
+    int c1;
+    int c2;
+    int esMiTurno;
 
     memset(buffer, 0x00, sizeof(buffer));
 
-    if (!obtenerUltimoScore(&score1, &score2)) {
-        score1 = 0;
-        score2 = 0;
-    }
-    /* Si se llego al objetivo finalizo*/
-    if (score1 >= maxGoles || score2 >= maxGoles) {
-        return 1;
-    }
+    while (1) {
+        esperaSemaforo(idSemaforo);
 
-    printf("Equipo %d - Remate: ingrese un número (1-3): ", numeroEquipo);
-    scanf("%d", &numeroIngresado);
-    if (numeroIngresado < 1 || numeroIngresado > 3) {
-        printf("Entrada inválida. Debe ser 1, 2 o 3.\n");
-        return 0;
-    }
-
-    numeroAleatorio = inDevolverNumeroAleatorio(1, 3);
-    
-    if(numeroIngresado == numeroAleatorio) {
-        gol = 1;
-    } else {
-        gol = 0;
-    }
-
-    printf("Equipo %d -> Remate: %d vs %d => %s\n", numeroEquipo, numeroIngresado, numeroAleatorio, (gol ? "GOL" : "FUERA"));
-
-    if (!obtenerUltimoScore(&score1, &score2)) {
-        score1 = 0;
-        score2 = 0;
-    }
-
-    snprintf(buffer, LARGO, "Remate: %d vs %d => %s", numeroIngresado, numeroAleatorio, (gol ? "GOL" : "FUERA"));
-    /* Escribo el log de lo que paso en el archivo del equipo*/
-    appendLogEquipo(numeroEquipo, buffer);
-
-    if (gol) {
-        if (numeroEquipo == 1) {
-            score1++;
-        } else {
-            score2++;
+        if (!obtenerUltimoScore(&score1, &score2)) {
+            score1 = 0;
+            score2 = 0;
         }
-    }
-    /* Escribio score sobreescribioendo*/
-    escribirScore(score1, score2);
+        if (score1 >= maxGoles || score2 >= maxGoles) {
+            levantaSemaforo(idSemaforo);
+            return 1;
+        }
 
-    return 0;
+        c1 = contarLineas(EQUIPO_1_FILE);
+        c2 = contarLineas(EQUIPO_2_FILE);
+        esMiTurno = (numeroEquipo == 1) ? (c1 == c2) : (c2 < c1);
+
+        levantaSemaforo(idSemaforo);
+
+        if (!esMiTurno) {
+            usleep(ESPERA_TURNO*1000);
+            continue;
+        }
+
+        printf("Equipo %d - Remate: ingrese un número (1-3): ", numeroEquipo);
+        scanf("%d", &numeroIngresado);
+        if (numeroIngresado < 1 || numeroIngresado > 3) {
+            printf("Entrada inválida. Debe ser 1, 2 o 3.\n");
+            usleep(ESPERA_TURNO*1000);
+            continue;
+        }
+
+        numeroAleatorio = inDevolverNumeroAleatorio(1, 3);
+        gol = (numeroIngresado == numeroAleatorio) ? 1 : 0;
+        printf("Equipo %d -> Remate: %d vs %d => %s\n", numeroEquipo, numeroIngresado, numeroAleatorio, (gol ? "GOL" : "FUERA"));
+
+        esperaSemaforo(idSemaforo);
+
+        if (!obtenerUltimoScore(&score1, &score2)) {
+            score1 = 0;
+            score2 = 0;
+        }
+
+        snprintf(buffer, LARGO, "Remate: %d vs %d => %s", numeroIngresado, numeroAleatorio, (gol ? "GOL" : "FUERA"));
+        appendLogEquipo(numeroEquipo, buffer);
+
+        if (gol) {
+            if (numeroEquipo == 1) {
+                score1++;
+            } else {
+                score2++;
+            }
+        }
+        escribirScore(score1, score2);
+
+        levantaSemaforo(idSemaforo);
+        usleep(ESPERA_TURNO*1000);
+    }
 }
 
 int procesoPanel(int maxGoles) {
-    int inicializado = 0;
-    int lastC1 = 0;
-    int lastC2 = 0;
     int c1;
     int c2;
     int s1;

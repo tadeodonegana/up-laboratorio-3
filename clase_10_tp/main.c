@@ -55,6 +55,7 @@ int main(int argc, char *argv[]){
 
     for (i = 0; i < cantidad; i++) {
         printf("Voy a esperar al thread %d\n", i);
+        // resultado no debe obtenerse del join, debe obtenerse de otro lado, como por ejemplo una variable global
         pthread_join(idHilo[i], &resultado);
         intentos[i] = (long)resultado;
     }

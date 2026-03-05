@@ -31,27 +31,25 @@ void* threadJugador(void* arg) {
     pthread_mutex_unlock(&mutex);
     
     while (ganador_actual == 0) {
+        pthread_mutex_lock(&mutex);
         num_intentos++;
         intento = inDevolverNumeroAleatorio(DESDE, HASTA);
         printf("Jugador %d intenta: %d\n", id_jugador, intento);
         
         if (intento == numero_pensado) {
-            pthread_mutex_lock(&mutex);
             if (*alguien_acerto == 0) {
                 printf("¡Jugador %d ha acertado!\n", id_jugador);
                 *alguien_acerto = id_jugador;
                 ganador_actual = id_jugador;
             }
-            pthread_mutex_unlock(&mutex);
             break;
         }
         
         usleep(inDevolverNumeroAleatorio(500, 5000) * 1000);
         
-        /* Verificar si alguien gano mientras esperabamos */
-        pthread_mutex_lock(&mutex);
         ganador_actual = *alguien_acerto;
         pthread_mutex_unlock(&mutex);
+        usleep(1000);
     }
 
     pthread_exit((void*)(long)num_intentos);
