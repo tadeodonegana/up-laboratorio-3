@@ -22,6 +22,8 @@ int main(int argc, char *argv[]) {
     printf("Segundo numero %d \n", inNumAl);
 
     /* Vector de numeros aleatorios no repetidos */
+    /* @TODO: Deberia pasar el vector como parametro, no crearlo dentro de la funcion */
+    /* Deberia definirlo aca y pasarlo, eso seria lo correcto */
     numeros = inObtenerNumerosAleatorios(DESDE, HASTA, cantidad);
 
     printf("Vector de numeros aleatorios de longitud %d \n", cantidad);
